@@ -2,56 +2,66 @@
 from collections import Counter
 import re
 import argparse
-from argparse import Namespace
-from array import *
-import numpy as np
-
-print(">>>Hello world!")
+import random
 
 # Start
 dictor = dict()
-print()
 
 
-def parsArgs():
+def parseargs():
     parser = argparse.ArgumentParser(description="Lab1:")
     parser.add_argument("-f", "--file", default="TexForLab.txt", type=open, help="Opens up a file for text read")
     parser.add_argument("-t", "--task", default=None, type=int, help="Opens up a specific task for running")
-    parser.add_argument("-c", "--count", default=20, type=int, help="Amount of fibonacci numbers")
+    parser.add_argument("-c", "--count", default=10, type=int, help="Amount of fibonacci numbers")
     return parser
 
 
+params = parseargs().parse_args()
+
+
 def fibonacci_generator():
-    a,b = 1,1
+    a, b = 1, 1
     yield a
     yield b
     while True:
-        a, b = b, a+b
+        a, b = b, a + b
         yield b
 
+
 # 1
-def tsk1():
-    dictor.update(Counter(words))
-    for element in dictor:
-        print(element, " was ", dictor.get(element))
+def count_words_task():
+    if params.file:
+        lines = params.file.readline()
+        words = re.sub('[^a-zA-Z ]', '', lines)
+        words = words.split()
     else:
-        dictor.clear()
-        print()
+        with open("TexForLab.txt") as file:
+            lines = file.readline()
+            words = re.sub('[^a-zA-Z ]', '', lines)
+            words = words.split()
+    print("Count words task")
+    dictor.update(Counter(words))
+    return dictor
 
 
 # 2
-def tsk2():
-    dictor.update(Counter(words).most_common(10))
-    print("String: ", end="")
-    for i in dictor:
-        print(str(i).lower(), end=" ")
+def most_common_task():
+    if params.file:
+        lines = params.file.readline()
+        words = re.sub('[^a-zA-Z ]', '', lines)
+        words = words.split()
     else:
-        print()
-        print()
+        with open("TexForLab.txt") as file:
+            lines = file.readline()
+            words = re.sub('[^a-zA-Z ]', '', lines)
+            words = words.split()
+    print("Most common task")
+    dictor.update(Counter(words).most_common(10))
+    return dictor
 
 
 # 3, 4
-def getnumbers_stringLike():
+def get_numbers_string_like():
     with open("/dev/random", 'rb') as file:
         entering_list = ""
         for i in range(10):
@@ -61,22 +71,35 @@ def getnumbers_stringLike():
         return entering_array
 
 
-def partition(numb, low, high):
-    i = low - 1
-    pivot = numb[high]  # warn we take right element as a pivot
-    for j in range(low, high):
-        if numb[j] < pivot:
-            i += 1
-            numb[j], numb[i] = numb[i], numb[j]
-    numb[i+1], numb[high] = numb[high], numb[i+1]
-    return i + 1
+def random_pivot(numbs, first, last):
+    random_pivote = random.randrange(first, last)
+    numbs[first], numbs[random_pivote] = numbs[random_pivote], numbs[first]
+    return partition(numbs, first, last)
+
+
+def partition(numbs, left, right):
+    pivot = left
+    i = left - 1
+    j = right + 1
+    while True:
+        while True:
+            i = i + 1
+            if numbs[i] >= numbs[pivot]:
+                break
+        while True:
+            j = j - 1
+            if numbs[j] <= numbs[pivot]:
+                break
+        if i >= j:
+            return j
+        numbs[i], numbs[j] = numbs[j], numbs[i]
 
 
 def quick_sort(numb, low, high):
     if low < high:
-        pivot = partition(numb, low, high)
+        pivot = random_pivot(numb, low, high)
         quick_sort(numb, low, pivot - 1)
-        quick_sort(numb, pivot + 1, high)  # pivot at his place?
+        quick_sort(numb, pivot + 1, high) # random pivot time taken?
 
 
 def merge_sort(numb):
@@ -111,58 +134,46 @@ def merge_sort(numb):
         k += 1
 
 
-def tsk3():
-    nums = getnumbers_stringLike()
+def quick_sort_task():
+    nums = get_numbers_string_like()
     print("Quick sort:")
-    print("#right element taken as a pivot", end="\n\n")
+    print("#random element taken as a pivot", end="\n\n")
     print(nums)
     quick_sort(numb=nums, low=0, high=len(nums) - 1)
-    print(nums, end='\n\n')
+    return nums
 
 
-def tsk4():
-    nums = getnumbers_stringLike()
+def merge_sort_task():
+    nums = get_numbers_string_like()
     print("Merge sort:")
     print(nums)
     merge_sort(numb=nums)
-    print(nums)
+    return nums
 
 
-def tsk5():
+def fibonacci_task():
+    print("Fibonacci task")
     seq = fibonacci_generator()
-    print([next(seq) for _ in range(params.count)])
+    return [next(seq) for _ in range(params.count)]
 
 
 def choose(argument):
     switcher = {
-        1: tsk1,
-        2: tsk2,
-        3: tsk3,
-        4: tsk4,
-        5: tsk5,
+        1: count_words_task,
+        2: most_common_task,
+        3: quick_sort_task,
+        4: merge_sort_task,
+        5: fibonacci_task,
     }
-    switcher.get(argument, lambda: "Invalid month")()
+    var = switcher.get(argument, lambda: "Invalid data")()
+    if params.task == 2:
+        print("String: ", end="")
+        for i in var:
+            print(str(i).lower(), end=" ")
+        print()
+    else:
+        print(var)
 
 # main
-params = parsArgs().parse_args()
-
-if params.file:
-    lines = params.file.readline()
-    # print(lines)
-    words = re.sub('[^a-zA-Z ]', '', lines)
-    words = words.split()
-else:
-    with open("TexForLab.txt") as file:
-        lines = file.readline()
-        # print(lines)
-        words = re.sub('[^a-zA-Z ]', '', lines)
-        words = words.split()
-
 if params.task:
     choose(params.task)
-else:
-    choose(1)
-    choose(2)
-    choose(3)
-    choose(4)
-    choose(5)
