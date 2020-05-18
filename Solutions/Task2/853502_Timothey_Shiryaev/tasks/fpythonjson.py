@@ -26,25 +26,53 @@ def from_json(str_json):
         result = str(str_json).replace('\"','')
 
     if str_json[0] == "[":
-        splitter = str_json[1:-1]
-        splitter = splitter.split(",")
+        tmp = str_json[1:-1]
+        tmp = tmp.split(",")
         result = []
-        for i in splitter:
+        for i in tmp:
            result.append(from_json(i))
 
     if str_json[0] == "{":
         result = {}
-        splitter = str_json[1:-1]
-        splitter = splitter.split(", ")
-        for i in splitter:
-            splitter1 = i.split(": ")
-            splitter1[0] = from_json(splitter1[0])
-            splitter1[1] = from_json(splitter1[1])
-            result[splitter1[0]] = splitter1[1]
+        tmp = str_json[1:-1]
+        tmp = tmp.split(", ")
+        for i in tmp:
+            tmp1 = i.split(": ")
+            tmp1[1] = from_json(tmp1[1])
+            tmp1[0] = from_json(tmp1[0])
+            result[tmp1[0]] = tmp1[1]
 
     return result
 
-print(from_json(input()))
+#print(from_json('"powers": ["Immortality", "Heat Immunity", "Inferno", "Teleportation", "Interdimensional travel"]'))
 
 # "powers": ["Immortality", "Heat Immunity", "Inferno", "Teleportation", "Interdimensional travel"]
 # {"James": 9001, "Jo": 3474, "Jess": 11926 }
+#{"sammy": {"username": "SammyShark", "location": "Indian Ocean", "online": true, "followers": 987 }, "jesse": { "username": "JesseOctopus", "location": "Pacific Ocean", "online": false, "followers": 432}, "drew": {"username": "DrewSquid", "location": "Atlantic Ocean", "online": false, "followers": 321}, "jamie": {"username": "JamieMantisShrimp", "location": "Pacific Ocean", "online": true, "followers": 654}}
+
+#{ 
+#  "sammy" : {
+#    "username"  : "SammyShark",
+#    "location"  : "Indian Ocean",
+#    "online"    : true,
+#    "followers" : 987
+#  },
+#  "jesse" : {
+#    "username"  : "JesseOctopus",
+#    "location"  : "Pacific Ocean",
+#    "online"    : false,
+#    "followers" : 432
+#  },
+#  "drew" : {
+#    "username"  : "DrewSquid",
+#    "location"  : "Atlantic Ocean",
+#    "online"    : false,
+#    "followers" : 321
+#  },
+#  "jamie" : {
+#    "username"  : "JamieMantisShrimp",
+#    "location"  : "Pacific Ocean",
+#    "online"    : true,
+#    "followers" : 654
+#  }
+#}

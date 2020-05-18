@@ -66,9 +66,9 @@ def merge_arrays(arr1, arr2):
         j = j + 1
     return arr3
 
-def external_merge():
+def external_merge(test):
     tempfiles = []
-    file = open('numbers.txt','r')
+    file = open(test,'r')
     e = []
     while True:
         temp_file = tempfile.NamedTemporaryFile(delete=False, mode='w')
@@ -94,6 +94,3 @@ def external_merge():
     for i in tempfiles:
         i.close()
         os.remove(i.name)
-
-if __name__ == '__main__':
-    external_merge()

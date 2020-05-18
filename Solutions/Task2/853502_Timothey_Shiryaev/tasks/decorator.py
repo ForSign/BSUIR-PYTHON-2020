@@ -1,13 +1,16 @@
-def memory(func):
-    cache = {}
-    def decorate(*arg):
-        result = cache.get(arg)
-        if result is None:
-            result = cache[arg] = func(*arg)
-        # print('Already in cache')
-        return result
+from functools import wraps
+def memory(fun):
 
-    return decorate
+    @wraps(fun)
+    def wrapper(*args, **kwargs):
+        key = (args, frozenset(sorted(kwargs.items())))
+        try:
+            return cache[key]
+        except KeyError:
+            ret = cache[key] = fun(*args, **kwargs)
+        return ret
+    cache = {}
+    return wrapper
 
 @memory
 def fibonacci(n):
@@ -15,6 +18,6 @@ def fibonacci(n):
         return n
     return fibonacci(n - 2) + fibonacci(n - 1)
 
-print(fibonacci(5))
-print(fibonacci(4))
+#print(fibonacci(5))
+#print(fibonacci(4))
 
